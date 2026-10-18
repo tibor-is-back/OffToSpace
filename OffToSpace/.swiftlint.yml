@@ -1,0 +1,9 @@
+excluded:
+  - TixMarktAPI
+
+line_length:
+  warning: 140
+  error: 200
+
+disabled_rules:
+  - nesting
