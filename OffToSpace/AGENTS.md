@@ -93,6 +93,7 @@ enum LaunchesViewState {
 - Strictly no force unwraps / force casts unless logically guaranteed and clearly justified.
 - The app must be localised, every text should use <feature>.<screen>.<element> for the localizable key
 - Every class is 'final' by default
+- Use ProgressView for loading, ContentUnavailableView for error and empty states
 - Promote values to named constants when they have semantic meaning or are reused, use AppConstants for App wide constants or create constant files per use-case
 - Use modern async-await APIs for all layers and structure concurrency
 - Every View should have multiple proper #previews representing its states, create one <feature>PreviewData file for reusable mocks in Views
