@@ -1,6 +1,6 @@
 import Foundation
 
-nonisolated enum LaunchMapper: Sendable {
+nonisolated enum LaunchMapper {
     static func map(_ dto: LaunchDTO) -> Launch {
         Launch(
             id: dto.id,

@@ -1,4 +1,4 @@
-nonisolated enum LaunchesPageMapper: Sendable {
+nonisolated enum LaunchesPageMapper {
     static func map(_ dto: LaunchesQueryDTO) -> Page<Launch> {
         Page(
             items: dto.docs.map(LaunchMapper.map),

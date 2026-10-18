@@ -1,6 +1,6 @@
 import Foundation
 
-nonisolated enum LaunchesEndpoint: Sendable {
+nonisolated enum LaunchesEndpoint {
     case launchesQuery(page: Int, limit: Int, startDate: Date, endDate: Date?)
 
     private static let versionPath = "v4"

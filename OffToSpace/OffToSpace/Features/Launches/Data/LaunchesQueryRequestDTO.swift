@@ -1,7 +1,7 @@
 import Foundation
 
-nonisolated struct LaunchesQueryRequestDTO: Encodable, Sendable {
-    private struct DateIntervalQuery: Encodable, Sendable {
+nonisolated struct LaunchesQueryRequestDTO: Encodable {
+    private struct DateIntervalQuery: Encodable {
         let gte: Date
         let lte: Date?
 
@@ -11,7 +11,7 @@ nonisolated struct LaunchesQueryRequestDTO: Encodable, Sendable {
         }
     }
 
-    private struct Query: Encodable, Sendable {
+    private struct Query: Encodable {
         let dateUtc: DateIntervalQuery
 
         enum CodingKeys: String, CodingKey {
@@ -19,7 +19,7 @@ nonisolated struct LaunchesQueryRequestDTO: Encodable, Sendable {
         }
     }
 
-    private struct Options: Encodable, Sendable {
+    private struct Options: Encodable {
         let page: Int
         let limit: Int
         let sort: [String: String]

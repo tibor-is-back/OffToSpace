@@ -4,7 +4,7 @@ nonisolated final class DefaultAPIClient: APIClient {
     private static let successStatusCodes = 200..<300
 
     private let session: URLSession
-    nonisolated(unsafe) private let decoder: JSONDecoder
+    private let decoder: JSONDecoder
 
     init(
         session: URLSession = .shared,

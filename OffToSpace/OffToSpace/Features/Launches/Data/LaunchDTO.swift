@@ -1,6 +1,6 @@
 import Foundation
 
-nonisolated struct LaunchDTO: Decodable, Sendable {
+nonisolated struct LaunchDTO: Decodable {
     let id: String
     let name: String
     let details: String?
@@ -11,13 +11,13 @@ nonisolated struct LaunchDTO: Decodable, Sendable {
     let rocket: Rocket
     let launchpad: Launchpad
 
-    nonisolated struct Rocket: Decodable, Sendable {
+    nonisolated struct Rocket: Decodable {
         let id: String
         let name: String
         let type: String
     }
 
-    nonisolated struct Launchpad: Decodable, Sendable {
+    nonisolated struct Launchpad: Decodable {
         let id: String
         let name: String
         let fullName: String
@@ -29,11 +29,11 @@ nonisolated struct LaunchDTO: Decodable, Sendable {
         }
     }
 
-    nonisolated struct Links: Decodable, Sendable {
+    nonisolated struct Links: Decodable {
         let patch: Patch
         let webcast: String?
 
-        nonisolated struct Patch: Decodable, Sendable {
+        nonisolated struct Patch: Decodable {
             let small: String?
             let large: String?
         }
