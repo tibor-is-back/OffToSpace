@@ -17,6 +17,7 @@ nonisolated enum LaunchDTOFixture {
         rocketId: String = "rocket-1",
         rocketName: String = "Falcon 1",
         rocketType: String = "rocket",
+        rocketFlickrImages: [String] = ["https://example.com/falcon-1-a.png"],
         launchpadName: String = "Kwajalein Atoll",
         launchpadFullName: String = "Kwajalein Atoll Omelek Island"
     ) -> LaunchDTO {
@@ -31,7 +32,12 @@ nonisolated enum LaunchDTOFixture {
                 patch: LaunchDTO.Links.Patch(small: smallPatch, large: largePatch),
                 webcast: webcast
             ),
-            rocket: LaunchDTO.Rocket(id: rocketId, name: rocketName, type: rocketType),
+            rocket: LaunchDTO.Rocket(
+                id: rocketId,
+                name: rocketName,
+                type: rocketType,
+                flickrImages: rocketFlickrImages
+            ),
             launchpad: LaunchDTO.Launchpad(
                 id: "pad-1",
                 name: launchpadName,

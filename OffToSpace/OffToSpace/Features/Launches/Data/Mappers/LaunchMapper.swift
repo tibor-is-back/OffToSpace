@@ -13,7 +13,12 @@ nonisolated enum LaunchMapper {
             date: dto.dateUtc,
             status: status(upcoming: dto.upcoming, success: dto.success),
             webcastURL: dto.links.webcast.flatMap(URL.init(string:)),
-            rocket: Launch.Rocket(id: dto.rocket.id, name: dto.rocket.name, type: dto.rocket.type)
+            rocket: Launch.Rocket(
+                id: dto.rocket.id,
+                name: dto.rocket.name,
+                type: dto.rocket.type,
+                imageURL: dto.rocket.flickrImages.compactMap(URL.init(string:)).first
+            )
         )
     }
 

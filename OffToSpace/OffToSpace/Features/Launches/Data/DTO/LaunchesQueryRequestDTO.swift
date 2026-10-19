@@ -23,13 +23,33 @@ nonisolated struct LaunchesQueryRequestDTO: Encodable {
         let page: Int
         let limit: Int
         let sort: [String: String]
-        let populate: [String]
+        let populate: [Populate]
+    }
+
+    private struct Populate: Encodable {
+        let path: String
+        let select: [String: Int]?
+
+        enum CodingKeys: String, CodingKey {
+            case path
+            case select
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(path, forKey: .path)
+            try container.encodeIfPresent(select, forKey: .select)
+        }
     }
 
     private static let dateUtcKey = "date_utc"
     private static let descendingSort = "desc"
     private static let rocketPopulatePath = "rocket"
     private static let launchpadPopulatePath = "launchpad"
+    private static let rocketNameField = "name"
+    private static let rocketTypeField = "type"
+    private static let rocketFlickrImagesField = "flickr_images"
+    private static let includeField = 1
 
     private let query: Query
     private let options: Options
@@ -42,7 +62,17 @@ nonisolated struct LaunchesQueryRequestDTO: Encodable {
             page: page,
             limit: limit,
             sort: [Self.dateUtcKey: Self.descendingSort],
-            populate: [Self.rocketPopulatePath, Self.launchpadPopulatePath]
+            populate: [
+                Populate(
+                    path: Self.rocketPopulatePath,
+                    select: [
+                        Self.rocketNameField: Self.includeField,
+                        Self.rocketTypeField: Self.includeField,
+                        Self.rocketFlickrImagesField: Self.includeField
+                    ]
+                ),
+                Populate(path: Self.launchpadPopulatePath, select: nil)
+            ]
         )
     }
 }

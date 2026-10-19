@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct LaunchesView: View {
-    let viewModel: LaunchesViewModel
+    @State private var viewModel: LaunchesViewModel
+
+    init(viewModel: LaunchesViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
 
     var body: some View {
         VStack(spacing: .zero) {
@@ -12,6 +16,16 @@ struct LaunchesView: View {
         }
         .background(DesignSystem.Colors.background)
         .toolbar(.hidden, for: .navigationBar)
+        .navigationDestination(item: Binding(
+            get: { viewModel.state.selectedLaunch },
+            set: { launch in
+                if launch == nil {
+                    viewModel.handle(event: .detailsDismissed)
+                }
+            }
+        )) { launch in
+            LaunchDetailsView(viewModel: LaunchDetailsViewModel(launch: launch))
+        }
         .task {
             viewModel.handle(event: .appeared)
         }

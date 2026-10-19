@@ -25,6 +25,7 @@ enum DesignSystem {
         )
 
         static let primaryText = Color.primary
+        static let onAccent = Color.white
         static let secondaryText = Color.secondary
 
         static let tertiaryText = adaptive(
@@ -129,6 +130,7 @@ enum DesignSystem {
         static let image: CGFloat = 64
         static let launchThumbnailWidth: CGFloat = 72
         static let launchThumbnailHeight: CGFloat = 80
+        static let launchDetailsImage: CGFloat = 300
         static let qrCode: CGFloat = 240
         static let imageAspectRatio: CGFloat = 16 / 9
     }

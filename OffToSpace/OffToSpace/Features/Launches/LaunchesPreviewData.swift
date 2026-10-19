@@ -1,6 +1,37 @@
 import Foundation
 
 enum LaunchesPreviewData {
+    static let detailsLaunch = Launch(
+        id: "crew-8",
+        name: "Crew-8",
+        details: "Crew-8 carried four astronauts to the International Space Station for scientific research and maintenance.",
+        imageURL: URL(string: "https://picsum.photos/seed/crew8/800"),
+        launchSite: "KSC LC-39A",
+        launchSiteFullName: "Kennedy Space Center Historic Launch Complex 39A",
+        date: Date(timeIntervalSince1970: 1_709_506_380),
+        status: .successful,
+        webcastURL: URL(string: "https://example.com/watch"),
+        rocket: .init(
+            id: "falcon-9",
+            name: "Falcon 9",
+            type: "Block 5",
+            imageURL: URL(string: "https://picsum.photos/seed/falcon9/800")
+        )
+    )
+
+    static let minimalDetailsLaunch = Launch(
+        id: "starlink-10",
+        name: "Starlink Group 10-1",
+        details: nil,
+        imageURL: nil,
+        launchSite: "CCSFS SLC-40",
+        launchSiteFullName: "Cape Canaveral Space Force Station Space Launch Complex 40",
+        date: Date(timeIntervalSince1970: 1_735_689_600),
+        status: .upcoming,
+        webcastURL: nil,
+        rocket: .init(id: "falcon-9", name: "Falcon 9", type: "rocket", imageURL: nil)
+    )
+
     static func makeViewModel(content: LaunchesViewState.Content) -> LaunchesViewModel {
         LaunchesViewModel(
             interactor: PreviewLaunchesInteractor(),

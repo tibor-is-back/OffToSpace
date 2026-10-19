@@ -15,6 +15,14 @@ nonisolated struct LaunchDTO: Decodable {
         let id: String
         let name: String
         let type: String
+        let flickrImages: [String]
+
+        enum CodingKeys: String, CodingKey {
+            case id
+            case name
+            case type
+            case flickrImages = "flickr_images"
+        }
     }
 
     nonisolated struct Launchpad: Decodable {

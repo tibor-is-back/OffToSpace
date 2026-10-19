@@ -170,7 +170,7 @@ final class LaunchesViewModelTests: XCTestCase {
     private func launch(_ id: String) -> Launch {
         Launch(id: id, name: "Mission \(id)", details: nil, imageURL: nil, launchSite: "Launch site",
                launchSiteFullName: "Launch site full name", date: filter.startDate, status: .successful, webcastURL: nil,
-               rocket: Launch.Rocket(id: "rocket", name: "Rocket", type: "rocket"))
+               rocket: Launch.Rocket(id: "rocket", name: "Rocket", type: "rocket", imageURL: nil))
     }
 }
 

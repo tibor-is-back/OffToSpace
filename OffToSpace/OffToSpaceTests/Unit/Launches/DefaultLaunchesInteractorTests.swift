@@ -299,7 +299,12 @@ private func makeLaunch(id: String = "launch-1") -> Launch {
         date: Date(timeIntervalSince1970: 1_143_235_800),
         status: .failed,
         webcastURL: URL(string: "https://example.com/watch"),
-        rocket: Launch.Rocket(id: "rocket-1", name: "Falcon 1", type: "rocket")
+        rocket: Launch.Rocket(
+            id: "rocket-1",
+            name: "Falcon 1",
+            type: "rocket",
+            imageURL: URL(string: "https://example.com/falcon-1-a.png")
+        )
     )
 }
 

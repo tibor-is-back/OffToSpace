@@ -4,6 +4,7 @@ import Observation
 struct LaunchesViewState {
     var filter: LaunchFilter
     var content: Content = .loading
+    var selectedLaunch: Launch?
 
     enum Content {
         case loading
@@ -23,6 +24,7 @@ struct LaunchesViewState {
 enum LaunchesViewEvent {
     case appeared
     case launchSelected(String)
+    case detailsDismissed
     case nextPageRequested
     case retryTapped
     case dateRangeSelected(startDate: Date, endDate: Date)
@@ -34,6 +36,7 @@ final class LaunchesViewModel {
 
     private let interactor: any LaunchesInteractor
     private var items: [LaunchesListItemViewData] = []
+    private var launchesByID: [String: Launch] = [:]
     private var loadingTask: Task<Void, Never>?
 
     init(interactor: any LaunchesInteractor, filter: LaunchFilter, content: LaunchesViewState.Content = .loading) {
@@ -53,9 +56,10 @@ final class LaunchesViewModel {
             loadNextPage()
         case .dateRangeSelected(let startDate, let endDate):
             applyFilter(LaunchFilter(startDate: startDate, endDate: endDate))
-        case .launchSelected:
-            // Navigation will be added with the launch details flow.
-            break
+        case .launchSelected(let id):
+            state.selectedLaunch = launchesByID[id]
+        case .detailsDismissed:
+            state.selectedLaunch = nil
         }
     }
 
@@ -76,7 +80,7 @@ final class LaunchesViewModel {
                 let launches = try await interactor.loadNextPage()
                 try Task.checkCancellation()
 
-                items.append(contentsOf: launches.map { LaunchesListItemViewData(launch: $0) })
+                map(launches)
                 state.content = items.isEmpty && !interactor.hasNextPage
                     ? .empty
                     : .loaded(items, pagination: interactor.hasNextPage ? .idle : .finished)
@@ -89,10 +93,18 @@ final class LaunchesViewModel {
         }
     }
 
+    private func map(_ launches: [Launch]) {
+        for launch in launches {
+            launchesByID[launch.id] = launch
+            items.append(LaunchesListItemViewData(launch: launch))
+        }
+    }
+
     private func applyFilter(_ filter: LaunchFilter) {
         loadingTask?.cancel()
         loadingTask = nil
         items.removeAll()
+        launchesByID.removeAll()
         state.filter = filter
         interactor.updateFilter(filter)
         loadNextPage()

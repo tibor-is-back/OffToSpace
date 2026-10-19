@@ -19,7 +19,39 @@ final class LaunchMapperTests: XCTestCase {
         XCTAssertEqual(launch.date, LaunchDTOFixture.date)
         XCTAssertEqual(launch.status, .failed)
         XCTAssertEqual(launch.webcastURL, try XCTUnwrap(URL(string: "https://example.com/watch")))
-        XCTAssertEqual(launch.rocket, Launch.Rocket(id: "rocket-1", name: "Falcon 1", type: "rocket"))
+        XCTAssertEqual(
+            launch.rocket,
+            Launch.Rocket(
+                id: "rocket-1",
+                name: "Falcon 1",
+                type: "rocket",
+                imageURL: try XCTUnwrap(URL(string: "https://example.com/falcon-1-a.png"))
+            )
+        )
+    }
+
+    func testUsesFirstValidRocketImage() {
+        // Given
+        let dto = LaunchDTOFixture.make(
+            rocketFlickrImages: ["", "https://example.com/valid.png"]
+        )
+
+        // When
+        let launch = LaunchMapper.map(dto)
+
+        // Then
+        XCTAssertEqual(launch.rocket.imageURL?.absoluteString, "https://example.com/valid.png")
+    }
+
+    func testOmitsRocketImageWhenURLsAreInvalid() {
+        // Given
+        let dto = LaunchDTOFixture.make(rocketFlickrImages: [""])
+
+        // When
+        let launch = LaunchMapper.map(dto)
+
+        // Then
+        XCTAssertNil(launch.rocket.imageURL)
     }
 
     func testPrefersLargePatchImage() {
