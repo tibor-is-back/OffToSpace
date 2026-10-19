@@ -8,7 +8,8 @@ nonisolated enum LaunchMapper {
             details: dto.details,
             imageURL: dto.links.patch.large.flatMap(URL.init(string:))
                 ?? dto.links.patch.small.flatMap(URL.init(string:)),
-            launchSite: dto.launchpad.fullName,
+            launchSite: dto.launchpad.name,
+            launchSiteFullName: dto.launchpad.fullName,
             date: dto.dateUtc,
             status: status(upcoming: dto.upcoming, success: dto.success),
             webcastURL: dto.links.webcast.flatMap(URL.init(string:)),

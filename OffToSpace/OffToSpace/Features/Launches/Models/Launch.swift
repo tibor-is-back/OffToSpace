@@ -6,6 +6,7 @@ nonisolated struct Launch: Equatable {
     let details: String?
     let imageURL: URL?
     let launchSite: String
+    let launchSiteFullName: String
     let date: Date
     let status: Status
     let webcastURL: URL?

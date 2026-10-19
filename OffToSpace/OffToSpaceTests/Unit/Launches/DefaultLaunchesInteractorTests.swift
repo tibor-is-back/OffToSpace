@@ -295,6 +295,7 @@ private func makeLaunch(id: String = "launch-1") -> Launch {
         details: "Engine failure at 33 seconds.",
         imageURL: URL(string: "https://example.com/large.png"),
         launchSite: "Kwajalein Atoll Omelek Island",
+        launchSiteFullName: "Kwajalein Atoll Omelek Island",
         date: Date(timeIntervalSince1970: 1_143_235_800),
         status: .failed,
         webcastURL: URL(string: "https://example.com/watch"),
