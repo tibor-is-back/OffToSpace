@@ -30,7 +30,6 @@ struct LaunchesDatePicker: View {
                 Text("launches.datePicker.range \(startDate.formatted(Self.dateFormat)) \(endDate.formatted(Self.dateFormat))")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
 
                 Image(systemName: "chevron.right")
                     .foregroundStyle(DesignSystem.Colors.tertiaryText)

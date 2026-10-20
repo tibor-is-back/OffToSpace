@@ -5,39 +5,24 @@ struct AppRootView: View {
 
     var body: some View {
         TabView {
-            Tab {
+            Tab("app.root.launchesTab", image: TabIcon.launches) {
                 NavigationStack {
                     LaunchesView(
                         dependencies: dependencies.launches,
                         rockets: dependencies.rockets
                     )
                 }
-            } label: {
-                tabLabel("app.root.launchesTab", icon: TabIcon.launches)
-                    .accessibilityIdentifier("root.launchesTab")
             }
+            .accessibilityIdentifier("root.launchesTab")
 
-            Tab {
+            Tab("app.root.rocketsTab", image: TabIcon.rockets) {
                 NavigationStack {
                     RocketsView(dependencies: dependencies.rockets)
                 }
-            } label: {
-                tabLabel("app.root.rocketsTab", icon: TabIcon.rockets)
-                    .accessibilityIdentifier("root.rocketsTab")
             }
+            .accessibilityIdentifier("root.rocketsTab")
         }
         .tint(DesignSystem.Colors.accent)
-    }
-
-    private func tabLabel(_ titleKey: LocalizedStringKey, icon: String) -> some View {
-        Label {
-            Text(titleKey)
-        } icon: {
-            Image(icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: DesignSystem.Size.tabIcon, height: DesignSystem.Size.tabIcon)
-        }
     }
 }
 
