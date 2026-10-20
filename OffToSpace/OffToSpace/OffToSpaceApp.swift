@@ -13,7 +13,7 @@ struct OffToSpaceApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppRootView(launchesViewModel: dependencies.launches.makeViewModel())
+            AppRootView(dependencies: dependencies)
         }
     }
 }

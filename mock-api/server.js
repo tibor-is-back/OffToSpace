@@ -22,9 +22,18 @@ const lookups = {
   launchpad: new Map(launchpads.map((pad) => [pad.id, pad])),
 };
 
+const delayMs = responseDelayMs(process.env.DELAY, process.env.DELAY_MS);
+
 const app = express();
 app.use(cors());
 app.use(express.json({ strict: false }));
+app.use((_req, _res, next) => {
+  if (!delayMs) {
+    next();
+    return;
+  }
+  setTimeout(next, delayMs);
+});
 
 app.post('/v4/launches/query', (req, res) => {
   handleQuery(req, res, launches, { defaultSort: { date_utc: 'desc' } });
@@ -240,7 +249,21 @@ function isPlainObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function responseDelayMs(delay, delayMsValue) {
+  if (delayMsValue != null && delayMsValue !== '') {
+    const parsed = Number(delayMsValue);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      throw new Error('DELAY_MS must be a non-negative number');
+    }
+    return parsed;
+  }
+
+  const enabled = new Set(['1', 'true', 'yes', 'on']);
+  return enabled.has(String(delay).toLowerCase()) ? 2000 : 0;
+}
+
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
-  console.log(`SpaceX mock API listening on http://localhost:${port}`);
+  const delayNote = delayMs ? ` (delay ${delayMs}ms)` : '';
+  console.log(`SpaceX mock API listening on http://localhost:${port}${delayNote}`);
 });

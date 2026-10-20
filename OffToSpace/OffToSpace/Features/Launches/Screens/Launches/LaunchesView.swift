@@ -2,9 +2,18 @@ import SwiftUI
 
 struct LaunchesView: View {
     @State private var viewModel: LaunchesViewModel
+    private let makeRocketDetailsViewModel: (String) -> RocketDetailsViewModel
 
-    init(viewModel: LaunchesViewModel) {
+    init(dependencies: AppDependencies.Launches, rockets: AppDependencies.Rockets) {
+        self.init(
+            viewModel: dependencies.makeViewModel(),
+            makeRocketDetailsViewModel: rockets.makeDetailsViewModel(rocketID:)
+        )
+    }
+
+    init(viewModel: LaunchesViewModel, makeRocketDetailsViewModel: @escaping (String) -> RocketDetailsViewModel) {
         _viewModel = State(initialValue: viewModel)
+        self.makeRocketDetailsViewModel = makeRocketDetailsViewModel
     }
 
     var body: some View {
@@ -24,7 +33,10 @@ struct LaunchesView: View {
                 }
             }
         )) { launch in
-            LaunchDetailsView(viewModel: LaunchDetailsViewModel(launch: launch))
+            LaunchDetailsView(
+                viewModel: LaunchDetailsViewModel(launch: launch),
+                makeRocketDetailsViewModel: makeRocketDetailsViewModel
+            )
         }
         .task {
             viewModel.handle(event: .appeared)
@@ -144,31 +156,46 @@ struct LaunchesView: View {
 
 #Preview("Loading") {
     NavigationStack {
-        LaunchesView(viewModel: LaunchesPreviewData.makeViewModel(content: .loading))
+        LaunchesView(
+            viewModel: LaunchesPreviewData.makeViewModel(content: .loading),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
 }
 
 #Preview("Loaded") {
     NavigationStack {
-        LaunchesView(viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)))
+        LaunchesView(
+            viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
 }
 
 #Preview("Empty") {
     NavigationStack {
-        LaunchesView(viewModel: LaunchesPreviewData.makeViewModel(content: .empty))
+        LaunchesView(
+            viewModel: LaunchesPreviewData.makeViewModel(content: .empty),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
 }
 
 #Preview("Error") {
     NavigationStack {
-        LaunchesView(viewModel: LaunchesPreviewData.makeViewModel(content: .error))
+        LaunchesView(
+            viewModel: LaunchesPreviewData.makeViewModel(content: .error),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
 }
 
 #Preview("Dark Loaded") {
     NavigationStack {
-        LaunchesView(viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)))
+        LaunchesView(
+            viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
     .preferredColorScheme(.dark)
 }

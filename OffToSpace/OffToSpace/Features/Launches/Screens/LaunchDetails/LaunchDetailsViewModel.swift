@@ -1,14 +1,19 @@
 import Foundation
 import Observation
 
-enum LaunchDetailsViewState {
-    case loading
-    case loaded(LaunchDetailsViewData)
+struct LaunchDetailsViewState {
+    var content: Content = .loading
+    var selectedRocketID: String?
+
+    enum Content {
+        case loading
+        case loaded(LaunchDetailsViewData)
+    }
 }
 
 @Observable
 final class LaunchDetailsViewModel {
-    private(set) var state: LaunchDetailsViewState = .loading
+    private(set) var state = LaunchDetailsViewState()
 
     private let launch: Launch
 
@@ -19,9 +24,11 @@ final class LaunchDetailsViewModel {
     func handle(event: LaunchDetailsViewEvent) {
         switch event {
         case .appeared:
-            state = .loaded(map())
-        case .rocketSelected:
-            break
+            state.content = .loaded(map())
+        case .rocketSelected(let id):
+            state.selectedRocketID = id
+        case .rocketDetailsDismissed:
+            state.selectedRocketID = nil
         }
     }
 

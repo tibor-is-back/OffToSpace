@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct LaunchListItemView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let data: LaunchesListItemViewData
 
     var body: some View {
-        HStack(spacing: DesignSystem.Spacing.small) {
+        rowLayout {
             RemoteImage(url: data.imageURL)
                 .frame(
                     width: DesignSystem.Size.launchThumbnailWidth,
@@ -26,16 +27,18 @@ struct LaunchListItemView: View {
                     .foregroundStyle(DesignSystem.Colors.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
 
-                HStack(spacing: DesignSystem.Spacing.small) {
+                rowLayout {
                     Text(data.date)
                         .font(DesignSystem.Fonts.footnote)
                         .foregroundStyle(DesignSystem.Colors.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Spacer(minLength: .zero)
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Spacer(minLength: .zero)
+                    }
 
                     BadgeView(text: data.status.text, style: data.status.style)
-                        .fixedSize(horizontal: true, vertical: false)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
@@ -57,6 +60,12 @@ struct LaunchListItemView: View {
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("launches.listItem.\(data.id)")
         .accessibilityHint("launches.listItem.hint")
+    }
+
+    private var rowLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: DesignSystem.Spacing.small))
+            : AnyLayout(HStackLayout(spacing: DesignSystem.Spacing.small))
     }
 
 }
@@ -90,4 +99,11 @@ struct LaunchListItemView: View {
         .padding(DesignSystem.Spacing.medium)
         .background(DesignSystem.Colors.background)
         .preferredColorScheme(.dark)
+}
+
+#Preview("Accessibility text") {
+    LaunchListItemView(data: LaunchesPreviewData.successful)
+        .padding(DesignSystem.Spacing.medium)
+        .background(DesignSystem.Colors.background)
+        .environment(\.dynamicTypeSize, .accessibility5)
 }

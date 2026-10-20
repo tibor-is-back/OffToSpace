@@ -131,6 +131,9 @@ enum DesignSystem {
         static let launchThumbnailWidth: CGFloat = 72
         static let launchThumbnailHeight: CGFloat = 80
         static let launchDetailsImage: CGFloat = 300
+        static let rocketDetailsImage: CGFloat = 300
+        static let rocketThumbnailWidth: CGFloat = 80
+        static let rocketThumbnailHeight: CGFloat = 112
         static let qrCode: CGFloat = 240
         static let imageAspectRatio: CGFloat = 16 / 9
     }

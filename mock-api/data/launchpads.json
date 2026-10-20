@@ -9,7 +9,9 @@
     "longitude": -80.577366,
     "launch_attempts": 99,
     "launch_successes": 97,
-    "rockets": ["5e9d0d95eda69973a809d1ec"],
+    "rockets": [
+      "5e9d0d95eda69973a809d1ec"
+    ],
     "launches": [],
     "status": "active",
     "id": "5e9e4501f509094ba4566f84"
@@ -50,5 +52,22 @@
     "launches": [],
     "status": "active",
     "id": "5e9e4502f509092b78566f87"
+  },
+  {
+    "name": "Starbase OLP-2",
+    "full_name": "SpaceX Starbase Orbital Launch Pad 2",
+    "locality": "Boca Chica",
+    "region": "Texas",
+    "timezone": "America/Chicago",
+    "latitude": 25.997,
+    "longitude": -97.157,
+    "launch_attempts": 3,
+    "launch_successes": 3,
+    "rockets": [
+      "5e9d0d96eda699382d09d1ee"
+    ],
+    "launches": [],
+    "status": "active",
+    "id": "5e9e4502f509094188566f89"
   }
 ]

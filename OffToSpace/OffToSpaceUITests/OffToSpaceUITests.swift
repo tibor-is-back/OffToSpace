@@ -1,43 +1,97 @@
-//
-//  OffToSpaceUITests.swift
-//  OffToSpaceUITests
-//
-//  Created by Kántor Tibor on 18/10/2026.
-//
-
 import XCTest
 
 final class OffToSpaceUITests: XCTestCase {
+    private let timeout: TimeInterval = 5
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testLaunchesNavigatesThroughDetailsToRocketDetails() {
+        // Given
+        let app = launchApp()
+        let list = app.scrollViews["launches.list"]
+        XCTAssertTrue(list.waitForExistence(timeout: timeout))
+        XCTAssertTrue(app.buttons["launches.launch.starlink-6-40"].exists)
+
+        // When: scroll through the first page to a mission on the second page.
+        let launch = app.buttons["launches.launch.crew-8"]
+        scrollTo(launch, in: list)
+        launch.tap()
+
+        // Then
+        let details = app.scrollViews["launchDetails.screen"]
+        XCTAssertTrue(details.waitForExistence(timeout: timeout))
+        XCTAssertTrue(details.staticTexts["Crew-8"].exists)
+        XCTAssertTrue(details.staticTexts["Kennedy Space Center Launch Complex 39A"].exists)
+
+        // When
+        let rocket = app.buttons["launchDetails.rocket"]
+        scrollTo(rocket, in: details)
+        rocket.tap()
+
+        // Then
+        assertRocketDetails(in: app)
+    }
+
+    @MainActor
+    func testRocketsNavigatesToRocketDetails() {
+        // Given
+        let app = launchApp()
+
+        // When
+        let rocketsTab = app.buttons["root.rocketsTab"]
+        XCTAssertTrue(rocketsTab.waitForExistence(timeout: timeout), app.debugDescription)
+        rocketsTab.tap()
+        let list = app.scrollViews["rockets.list"]
+        XCTAssertTrue(list.waitForExistence(timeout: timeout))
+
+        // Then
+        XCTAssertTrue(app.buttons["rockets.rocket.falcon-1"].exists)
+
+        // When
+        let rocket = app.buttons["rockets.rocket.falcon-9"]
+        scrollTo(rocket, in: list)
+        rocket.tap()
+
+        // Then
+        assertRocketDetails(in: app)
+    }
+
+    @MainActor
+    private func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
+        app.launchArguments = ["uiTesting", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
+        return app
     }
 
     @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+    private func scrollTo(
+        _ element: XCUIElement,
+        in scrollView: XCUIElement,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for _ in 0..<20 {
+            if element.exists && element.isHittable {
+                return
+            }
+            scrollView.swipeUp()
         }
+        XCTAssertTrue(element.waitForExistence(timeout: timeout), file: file, line: line)
+        let hittable = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [hittable], timeout: timeout), .completed, file: file, line: line)
+    }
+
+    @MainActor
+    private func assertRocketDetails(in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        let screen = app.scrollViews["rocketDetails.screen"]
+        XCTAssertTrue(screen.waitForExistence(timeout: timeout), file: file, line: line)
+        XCTAssertTrue(screen.staticTexts["Falcon 9"].waitForExistence(timeout: timeout), file: file, line: line)
+        let description = screen.staticTexts["A reusable two-stage rocket."]
+        scrollTo(description, in: screen, file: file, line: line)
+        XCTAssertTrue(description.exists, file: file, line: line)
     }
 }

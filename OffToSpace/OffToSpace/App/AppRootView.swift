@@ -1,31 +1,30 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @State private var launchesViewModel: LaunchesViewModel
-
-    init(launchesViewModel: LaunchesViewModel) {
-        _launchesViewModel = State(initialValue: launchesViewModel)
-    }
+    let dependencies: AppDependencies
 
     var body: some View {
         TabView {
             Tab {
                 NavigationStack {
-                    LaunchesView(viewModel: launchesViewModel)
+                    LaunchesView(
+                        dependencies: dependencies.launches,
+                        rockets: dependencies.rockets
+                    )
                 }
             } label: {
                 tabLabel("app.root.launchesTab", icon: TabIcon.launches)
+                    .accessibilityIdentifier("root.launchesTab")
             }
-            .accessibilityIdentifier("root.launchesTab")
 
             Tab {
                 NavigationStack {
-                    RocketsView()
+                    RocketsView(dependencies: dependencies.rockets)
                 }
             } label: {
                 tabLabel("app.root.rocketsTab", icon: TabIcon.rockets)
+                    .accessibilityIdentifier("root.rocketsTab")
             }
-            .accessibilityIdentifier("root.rocketsTab")
         }
         .tint(DesignSystem.Colors.accent)
     }
@@ -48,11 +47,11 @@ private enum TabIcon {
 }
 
 #Preview("Light") {
-    AppRootView(launchesViewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)))
+    AppRootView(dependencies: AppDependencies(isUITesting: true))
         .preferredColorScheme(.light)
 }
 
 #Preview("Dark") {
-    AppRootView(launchesViewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)))
+    AppRootView(dependencies: AppDependencies(isUITesting: true))
         .preferredColorScheme(.dark)
 }

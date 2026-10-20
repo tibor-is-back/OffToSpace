@@ -7,7 +7,7 @@ final class DefaultLaunchesInteractor {
 
     init(repository: any LaunchesRepository,
          filter: LaunchFilter,
-         pageSize: Int = 20) {
+         pageSize: Int = 10) {
         self.repository = repository
         self.filter = filter
         self.pagination = PageHandler(limit: pageSize)

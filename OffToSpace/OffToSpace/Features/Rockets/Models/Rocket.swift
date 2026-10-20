@@ -1,6 +1,6 @@
 import Foundation
 
-nonisolated struct Rocket: Equatable {
+nonisolated struct Rocket: Hashable {
     let id: String
     let name: String
     let type: String

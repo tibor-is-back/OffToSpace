@@ -11,7 +11,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         let viewModel = LaunchDetailsViewModel(launch: launch)
 
         // Then
-        guard case .loading = viewModel.state else {
+        guard case .loading = viewModel.state.content else {
             return XCTFail("Expected loading before appearance")
         }
     }
@@ -25,7 +25,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         viewModel.handle(event: .appeared)
 
         // Then
-        guard case .loaded(let data) = viewModel.state else {
+        guard case .loaded(let data) = viewModel.state.content else {
             return XCTFail("Expected loaded details")
         }
         XCTAssertEqual(data.name, launch.name)
@@ -49,7 +49,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         viewModel.handle(event: .appeared)
 
         // Then
-        guard case .loaded(let data) = viewModel.state else {
+        guard case .loaded(let data) = viewModel.state.content else {
             return XCTFail("Expected loaded details without optional content")
         }
         XCTAssertNil(data.imageURL)
@@ -74,7 +74,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
             viewModel.handle(event: .appeared)
 
             // Then
-            guard case .loaded(let data) = viewModel.state else {
+            guard case .loaded(let data) = viewModel.state.content else {
                 return XCTFail("Expected loaded details for \(status)")
             }
             XCTAssertEqual(data.statusText, expected.text)

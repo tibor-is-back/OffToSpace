@@ -3,14 +3,17 @@ import SwiftUI
 enum LaunchDetailsViewEvent {
     case appeared
     case rocketSelected(String)
+    case rocketDetailsDismissed
 }
 
 struct LaunchDetailsView: View {
     @State private var viewModel: LaunchDetailsViewModel
     @State private var isWebcastPresented = false
+    private let makeRocketDetailsViewModel: (String) -> RocketDetailsViewModel
 
-    init(viewModel: LaunchDetailsViewModel) {
+    init(viewModel: LaunchDetailsViewModel, makeRocketDetailsViewModel: @escaping (String) -> RocketDetailsViewModel) {
         _viewModel = State(initialValue: viewModel)
+        self.makeRocketDetailsViewModel = makeRocketDetailsViewModel
     }
 
     var body: some View {
@@ -21,6 +24,16 @@ struct LaunchDetailsView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .accessibilityIdentifier("launchDetails.screen")
+            .navigationDestination(item: Binding(
+                get: { viewModel.state.selectedRocketID },
+                set: { id in
+                    if id == nil {
+                        viewModel.handle(event: .rocketDetailsDismissed)
+                    }
+                }
+            )) { id in
+                RocketDetailsView(viewModel: makeRocketDetailsViewModel(id))
+            }
             .onAppear {
                 viewModel.handle(event: .appeared)
             }
@@ -28,7 +41,7 @@ struct LaunchDetailsView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch viewModel.state {
+        switch viewModel.state.content {
         case .loading:
             ProgressView()
                 .accessibilityIdentifier("launchDetails.loading")
@@ -149,19 +162,28 @@ struct LaunchDetailsView: View {
 
 #Preview("Full details") {
     NavigationStack {
-        LaunchDetailsView(viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch))
+        LaunchDetailsView(
+            viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
 }
 
 #Preview("Dark details") {
     NavigationStack {
-        LaunchDetailsView(viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch))
+        LaunchDetailsView(
+            viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
     .preferredColorScheme(.dark)
 }
 
 #Preview("Minimal details") {
     NavigationStack {
-        LaunchDetailsView(viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.minimalDetailsLaunch))
+        LaunchDetailsView(
+            viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.minimalDetailsLaunch),
+            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
+        )
     }
 }

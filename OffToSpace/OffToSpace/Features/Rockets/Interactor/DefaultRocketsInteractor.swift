@@ -12,6 +12,10 @@ final class DefaultRocketsInteractor {
 }
 
 extension DefaultRocketsInteractor: RocketsInteractor {
+    func loadRocket(id: String) async throws -> Rocket {
+        try await repository.fetchRocket(id: id)
+    }
+
     var hasNextPage: Bool {
         pagination.nextPage != nil
     }
