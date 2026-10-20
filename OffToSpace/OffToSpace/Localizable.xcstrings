@@ -122,6 +122,26 @@
         }
       }
     },
+    "rockets.rockets.loading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading rockets…"
+          }
+        }
+      }
+    },
+    "rockets.details.loading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading rocket details…"
+          }
+        }
+      }
+    },
     "launches.launches.loading" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -27,7 +27,7 @@ struct RocketsView: View {
     private var content: some View {
         switch viewModel.state {
         case .loading:
-            ProgressView()
+            ProgressView("rockets.rockets.loading")
                 .accessibilityIdentifier("rockets.loading")
         case .loaded(let items, let pagination):
             ScrollView {

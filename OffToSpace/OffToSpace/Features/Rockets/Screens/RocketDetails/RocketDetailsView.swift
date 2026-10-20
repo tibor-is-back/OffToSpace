@@ -25,7 +25,7 @@ struct RocketDetailsView: View {
     private var content: some View {
         switch viewModel.state {
         case .loading:
-            ProgressView()
+            ProgressView("rockets.details.loading")
                 .accessibilityIdentifier("rocketDetails.loading")
         case .loaded(let data):
             details(data)

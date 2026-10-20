@@ -2,7 +2,9 @@
 
 A SwiftUI app built with Swift 6.
 
-![OffToSpace app demo](OffToSpace.gif)
+| Light mode | Dark mode |
+| --- | --- |
+| ![OffToSpace in light mode](LightMode.gif) | ![OffToSpace in dark mode](DarkMode.gif) |
 
 ## App Features
 
