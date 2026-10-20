@@ -12,6 +12,8 @@ npm start
 
 The server listens on `http://localhost:3000` (override with `PORT`).
 
+Set `DELAY=true` to hold every response for 2 seconds so loading states in the iOS app are visible. Override the wait with `DELAY_MS` (milliseconds), for example `DELAY=true npm start` or `DELAY_MS=3000 npm start`.
+
 Point the Swift app at:
 
 - Simulator: `http://localhost:3000`
