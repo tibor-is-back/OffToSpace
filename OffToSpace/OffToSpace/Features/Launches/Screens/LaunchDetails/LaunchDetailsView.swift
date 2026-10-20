@@ -1,10 +1,5 @@
 import SwiftUI
 
-enum LaunchDetailsViewEvent {
-    case appeared
-    case retryTapped
-}
-
 struct LaunchDetailsView: View {
     @State private var viewModel: LaunchDetailsViewModel
     private let onRocketSelected: (String) -> Void
@@ -20,6 +15,7 @@ struct LaunchDetailsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(DesignSystem.Colors.background)
             .toolbar(.visible, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
             .toolbarBackground(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .accessibilityIdentifier("launchDetails.screen")
@@ -30,7 +26,7 @@ struct LaunchDetailsView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch viewModel.state.content {
+        switch viewModel.state {
         case .loading:
             ProgressView()
                 .accessibilityIdentifier("launchDetails.loading")
@@ -188,5 +184,5 @@ struct LaunchDetailsView: View {
 }
 
 #Preview("Error") {
-    LaunchDetailsView(viewModel: LaunchesPreviewData.makeDetailsViewModel(state: .init(content: .error))) { _ in }
+    LaunchDetailsView(viewModel: LaunchesPreviewData.makeDetailsViewModel(state: .error)) { _ in }
 }

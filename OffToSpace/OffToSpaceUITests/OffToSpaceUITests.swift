@@ -40,7 +40,7 @@ final class OffToSpaceUITests: XCTestCase {
         let app = launchApp()
 
         // When
-        let rocketsTab = app.buttons["root.rocketsTab"]
+        let rocketsTab = app.tabBars.buttons["Rockets"]
         XCTAssertTrue(rocketsTab.waitForExistence(timeout: timeout), app.debugDescription)
         rocketsTab.tap()
         let list = app.scrollViews["rockets.list"]

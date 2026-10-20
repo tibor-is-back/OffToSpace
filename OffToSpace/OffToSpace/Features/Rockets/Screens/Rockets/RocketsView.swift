@@ -25,7 +25,7 @@ struct RocketsView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch viewModel.state.content {
+        switch viewModel.state {
         case .loading:
             ProgressView()
                 .accessibilityIdentifier("rockets.loading")

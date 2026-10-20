@@ -42,7 +42,7 @@ enum LaunchesPreviewData {
 
     static func makeDetailsViewModel(
         launch: Launch = detailsLaunch,
-        state: LaunchDetailsViewState = .init()
+        state: LaunchDetailsViewState = .loading
     ) -> LaunchDetailsViewModel {
         LaunchDetailsViewModel(launchID: launch.id, interactor: PreviewLaunchDetailsInteractor(launch: launch), state: state)
     }

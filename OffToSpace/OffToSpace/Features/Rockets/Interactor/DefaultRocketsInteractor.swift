@@ -6,7 +6,7 @@ final class DefaultRocketsInteractor {
     private var pagination: PageHandler
 
     init(repository: any RocketsRepository,
-         pageSize: Int = 20) {
+         pageSize: Int = 10) {
         self.repository = repository
         self.pagination = PageHandler(limit: pageSize)
     }

@@ -1,7 +1,7 @@
 import Foundation
 
 enum RocketsPreviewData {
-    static func makeViewModel(state: RocketsViewState.Content) -> RocketsViewModel {
+    static func makeViewModel(state: RocketsViewState) -> RocketsViewModel {
         RocketsViewModel(interactor: PreviewRocketsInteractor(), state: state)
     }
 

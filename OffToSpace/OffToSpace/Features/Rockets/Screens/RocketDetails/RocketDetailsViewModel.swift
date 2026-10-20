@@ -1,17 +1,6 @@
 import Foundation
 import Observation
 
-enum RocketDetailsViewState {
-    case loading
-    case loaded(RocketDetailsViewData)
-    case error
-}
-
-enum RocketDetailsViewEvent {
-    case appeared
-    case retryTapped
-}
-
 @Observable
 final class RocketDetailsViewModel {
     private(set) var state: RocketDetailsViewState

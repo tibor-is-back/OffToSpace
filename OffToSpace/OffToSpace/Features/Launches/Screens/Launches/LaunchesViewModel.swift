@@ -1,32 +1,6 @@
 import Foundation
 import Observation
 
-struct LaunchesViewState {
-    var filter: LaunchFilter
-    var content: Content = .loading
-
-    enum Content {
-        case loading
-        case loaded([LaunchesListItemViewData], pagination: Pagination = .idle)
-        case empty
-        case error
-    }
-
-    enum Pagination: Hashable {
-        case idle
-        case loading
-        case error
-        case finished
-    }
-}
-
-enum LaunchesViewEvent {
-    case appeared
-    case nextPageRequested
-    case retryTapped
-    case dateRangeSelected(startDate: Date, endDate: Date)
-}
-
 @Observable
 final class LaunchesViewModel {
     private(set) var state: LaunchesViewState

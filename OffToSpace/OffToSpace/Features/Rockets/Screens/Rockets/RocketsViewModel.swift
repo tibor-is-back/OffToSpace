@@ -1,30 +1,6 @@
 import Foundation
 import Observation
 
-struct RocketsViewState {
-    var content: Content = .loading
-
-    enum Content {
-        case loading
-        case loaded([RocketsListItemViewData], pagination: Pagination = .idle)
-        case empty
-        case error
-    }
-
-    enum Pagination {
-        case idle
-        case loading
-        case error
-        case finished
-    }
-}
-
-enum RocketsViewEvent {
-    case appeared
-    case nextPageRequested
-    case retryTapped
-}
-
 @Observable
 final class RocketsViewModel {
     private(set) var state: RocketsViewState
@@ -33,9 +9,9 @@ final class RocketsViewModel {
     private var items: [RocketsListItemViewData] = []
     private var loadingTask: Task<Void, Never>?
 
-    init(interactor: any RocketsInteractor, state: RocketsViewState.Content = .loading) {
+    init(interactor: any RocketsInteractor, state: RocketsViewState = .loading) {
         self.interactor = interactor
-        self.state = RocketsViewState(content: state)
+        self.state = state
         if case .loaded(let items, _) = state {
             self.items = items
         }
@@ -44,7 +20,7 @@ final class RocketsViewModel {
     func handle(event: RocketsViewEvent) {
         switch event {
         case .appeared:
-            guard case .loading = state.content else { return }
+            guard case .loading = state else { return }
             loadNextPage()
         case .nextPageRequested, .retryTapped:
             loadNextPage()
@@ -54,7 +30,7 @@ final class RocketsViewModel {
 
     private func loadNextPage() {
         guard loadingTask == nil, interactor.hasNextPage else { return }
-        state.content = items.isEmpty ? .loading : .loaded(items, pagination: .loading)
+        state = items.isEmpty ? .loading : .loaded(items, pagination: .loading)
 
         loadingTask = Task { [weak self] in
             guard let self else { return }
@@ -64,14 +40,14 @@ final class RocketsViewModel {
                 let rockets = try await interactor.loadNextPage()
                 try Task.checkCancellation()
                 map(rockets)
-                state.content = items.isEmpty && !interactor.hasNextPage
+                state = items.isEmpty && !interactor.hasNextPage
                     ? .empty
                     : .loaded(items, pagination: interactor.hasNextPage ? .idle : .finished)
             } catch is CancellationError {
                 // Cancellation does not represent a loading failure.
             } catch {
                 guard !Task.isCancelled else { return }
-                state.content = items.isEmpty ? .error : .loaded(items, pagination: .error)
+                state = items.isEmpty ? .error : .loaded(items, pagination: .error)
             }
         }
     }

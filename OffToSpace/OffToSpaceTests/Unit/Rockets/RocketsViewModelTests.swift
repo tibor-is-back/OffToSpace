@@ -9,7 +9,7 @@ final class RocketsViewModelTests: XCTestCase {
         let interactor = RocketsViewModelInteractorMock()
         let viewModel = RocketsViewModel(interactor: interactor)
         let rocket = makeRocket("first")
-        guard case .loading = viewModel.state.content else {
+        guard case .loading = viewModel.state else {
             return XCTFail("Expected initial loading state")
         }
         XCTAssertEqual(interactor.requestCount, 0)
@@ -21,7 +21,7 @@ final class RocketsViewModelTests: XCTestCase {
         viewModel.handle(event: .appeared)
 
         // Then
-        guard case .loaded(let items, .finished) = viewModel.state.content else {
+        guard case .loaded(let items, .finished) = viewModel.state else {
             return XCTFail("Expected loaded items with finished pagination")
         }
         XCTAssertEqual(interactor.requestCount, 1)
@@ -44,7 +44,7 @@ final class RocketsViewModelTests: XCTestCase {
         // When
         await request(.nextPageRequested, viewModel: viewModel, interactor: interactor)
         viewModel.handle(event: .nextPageRequested)
-        guard case .loaded(let existing, .loading) = viewModel.state.content else {
+        guard case .loaded(let existing, .loading) = viewModel.state else {
             interactor.completion?.resume(throwing: CancellationError())
             return XCTFail("Expected existing items during pagination")
         }
@@ -53,7 +53,7 @@ final class RocketsViewModelTests: XCTestCase {
         viewModel.handle(event: .nextPageRequested)
 
         // Then
-        guard case .loaded(let items, .finished) = viewModel.state.content else {
+        guard case .loaded(let items, .finished) = viewModel.state else {
             return XCTFail("Expected finished pagination")
         }
         XCTAssertEqual(items.map(\.id), ["first", "second"])
@@ -70,7 +70,7 @@ final class RocketsViewModelTests: XCTestCase {
         await complete(.success([]), viewModel: viewModel, interactor: interactor)
 
         // Then
-        guard case .loaded(let items, .idle) = viewModel.state.content else {
+        guard case .loaded(let items, .idle) = viewModel.state else {
             return XCTFail("Expected pagination to remain available after an empty intermediate page")
         }
         XCTAssertTrue(items.isEmpty)
@@ -80,7 +80,7 @@ final class RocketsViewModelTests: XCTestCase {
         await complete(.success([]), hasNextPage: false, viewModel: viewModel, interactor: interactor)
 
         // Then
-        guard case .empty = viewModel.state.content else {
+        guard case .empty = viewModel.state else {
             return XCTFail("Expected empty state after the last empty page")
         }
     }
@@ -95,7 +95,7 @@ final class RocketsViewModelTests: XCTestCase {
         await complete(.failure(NetworkError.timeout), viewModel: viewModel, interactor: interactor)
 
         // Then
-        guard case .error = viewModel.state.content else {
+        guard case .error = viewModel.state else {
             return XCTFail("Expected initial load failure to show an error")
         }
 
@@ -104,7 +104,7 @@ final class RocketsViewModelTests: XCTestCase {
         await complete(.success([makeRocket("retry")]), hasNextPage: false, viewModel: viewModel, interactor: interactor)
 
         // Then
-        guard case .loaded(let items, _) = viewModel.state.content else {
+        guard case .loaded(let items, _) = viewModel.state else {
             return XCTFail("Expected retry to load items")
         }
         XCTAssertEqual(items.map(\.id), ["retry"])
@@ -122,7 +122,7 @@ final class RocketsViewModelTests: XCTestCase {
         await complete(.failure(NetworkError.timeout), viewModel: viewModel, interactor: interactor)
 
         // Then
-        guard case .loaded(let existing, .error) = viewModel.state.content else {
+        guard case .loaded(let existing, .error) = viewModel.state else {
             return XCTFail("Expected pagination failure to preserve existing items")
         }
         XCTAssertEqual(existing.map(\.id), ["first"])
@@ -132,7 +132,7 @@ final class RocketsViewModelTests: XCTestCase {
         await complete(.success([makeRocket("second")]), hasNextPage: false, viewModel: viewModel, interactor: interactor)
 
         // Then
-        guard case .loaded(let items, .finished) = viewModel.state.content else {
+        guard case .loaded(let items, .finished) = viewModel.state else {
             return XCTFail("Expected retry to finish pagination")
         }
         XCTAssertEqual(items.map(\.id), ["first", "second"])

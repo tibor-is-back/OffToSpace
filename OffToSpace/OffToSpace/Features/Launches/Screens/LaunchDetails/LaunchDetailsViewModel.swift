@@ -1,24 +1,14 @@
 import Foundation
 import Observation
 
-struct LaunchDetailsViewState {
-    var content: Content = .loading
-
-    enum Content {
-        case loading
-        case loaded(LaunchDetailsViewData)
-        case error
-    }
-}
-
 @Observable
 final class LaunchDetailsViewModel {
-    private(set) var state = LaunchDetailsViewState()
+    private(set) var state: LaunchDetailsViewState
 
     private let launchID: String
     private let interactor: any LaunchesInteractor
 
-    init(launchID: String, interactor: any LaunchesInteractor, state: LaunchDetailsViewState = .init()) {
+    init(launchID: String, interactor: any LaunchesInteractor, state: LaunchDetailsViewState = .loading) {
         self.launchID = launchID
         self.interactor = interactor
         self.state = state
@@ -27,15 +17,15 @@ final class LaunchDetailsViewModel {
     func handle(event: LaunchDetailsViewEvent) {
         switch event {
         case .appeared:
-            guard case .loading = state.content else { return }
+            guard case .loading = state else { return }
         case .retryTapped:
             break
         }
         do {
             let launch = try interactor.loadLaunch(id: launchID)
-            state.content = .loaded(map(launch))
+            state = .loaded(map(launch))
         } catch {
-            state.content = .error
+            state = .error
         }
     }
 

@@ -11,7 +11,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         let viewModel = makeViewModel(launch: launch)
 
         // Then
-        guard case .loading = viewModel.state.content else {
+        guard case .loading = viewModel.state else {
             return XCTFail("Expected loading before appearance")
         }
     }
@@ -25,7 +25,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         viewModel.handle(event: .appeared)
 
         // Then
-        guard case .loaded(let data) = viewModel.state.content else {
+        guard case .loaded(let data) = viewModel.state else {
             return XCTFail("Expected loaded details")
         }
         XCTAssertEqual(data.name, launch.name)
@@ -49,7 +49,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         viewModel.handle(event: .appeared)
 
         // Then
-        guard case .loaded(let data) = viewModel.state.content else {
+        guard case .loaded(let data) = viewModel.state else {
             return XCTFail("Expected loaded details without optional content")
         }
         XCTAssertNil(data.imageURL)
@@ -74,7 +74,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
             viewModel.handle(event: .appeared)
 
             // Then
-            guard case .loaded(let data) = viewModel.state.content else {
+            guard case .loaded(let data) = viewModel.state else {
                 return XCTFail("Expected loaded details for \(status)")
             }
             XCTAssertEqual(data.statusText, expected.text)
@@ -91,7 +91,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         viewModel.handle(event: .appeared)
 
         // Then
-        guard case .error = viewModel.state.content else {
+        guard case .error = viewModel.state else {
             return XCTFail("Expected an error for a missing launch")
         }
 
@@ -100,7 +100,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         viewModel.handle(event: .retryTapped)
 
         // Then
-        guard case .loaded(let data) = viewModel.state.content else {
+        guard case .loaded(let data) = viewModel.state else {
             return XCTFail("Expected retry to load the launch")
         }
         XCTAssertEqual(data.name, "Crew-8")

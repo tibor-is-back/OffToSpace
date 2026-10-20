@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct LaunchesDatePicker: View {
-    @State private var startDate: Date
-    @State private var endDate: Date
+    private let startDate: Date
+    private let endDate: Date
     private let onDone: (Date, Date) -> Void
     @State private var isPresented = false
 
@@ -14,8 +14,8 @@ struct LaunchesDatePicker: View {
               let yearEnd = calendar.date(byAdding: .second, value: -1, to: year.end) else {
             preconditionFailure("The current calendar must provide the current year's date range.")
         }
-        _startDate = State(initialValue: startDate ?? year.start)
-        _endDate = State(initialValue: endDate ?? yearEnd)
+        self.startDate = startDate ?? year.start
+        self.endDate = endDate ?? yearEnd
         self.onDone = onDone
     }
 
@@ -48,38 +48,7 @@ struct LaunchesDatePicker: View {
         .accessibilityIdentifier("launches.dateRange")
         .accessibilityHint("launches.datePicker.hint")
         .sheet(isPresented: $isPresented) {
-            NavigationStack {
-                Form {
-                    DatePicker(
-                        "launches.datePicker.startDate",
-                        selection: $startDate,
-                        in: ...endDate,
-                        displayedComponents: .date
-                    )
-                    .accessibilityIdentifier("launches.startDate")
-
-                    DatePicker(
-                        "launches.datePicker.endDate",
-                        selection: $endDate,
-                        in: startDate...,
-                        displayedComponents: .date
-                    )
-                    .accessibilityIdentifier("launches.endDate")
-                }
-                .navigationTitle("launches.datePicker.title")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("launches.datePicker.done") {
-                            onDone(startDate, endDate)
-                            isPresented = false
-                        }
-                        .accessibilityIdentifier("launches.datePickerDone")
-                    }
-                }
-            }
-            .tint(DesignSystem.Colors.accent)
-            .presentationDetents([.medium, .large])
+            LaunchesDateRangeSheet(startDate: startDate, endDate: endDate, onDone: onDone)
         }
     }
 }

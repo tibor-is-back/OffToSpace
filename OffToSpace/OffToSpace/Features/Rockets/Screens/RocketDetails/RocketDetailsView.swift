@@ -12,6 +12,7 @@ struct RocketDetailsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(DesignSystem.Colors.background)
             .toolbar(.visible, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
             .toolbarBackground(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .accessibilityIdentifier("rocketDetails.screen")
