@@ -192,6 +192,10 @@ private final class ViewModelLaunchesInteractorMock: LaunchesInteractor {
         hasNextPage = true
     }
 
+    func loadLaunch(id: String) throws -> Launch {
+        throw LaunchDetailsError.notFound
+    }
+
     func loadNextPage() async throws -> [Launch] {
         let index = requestCount
         requestCount += 1

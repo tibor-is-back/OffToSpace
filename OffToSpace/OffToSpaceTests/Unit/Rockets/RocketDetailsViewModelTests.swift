@@ -4,24 +4,6 @@ import XCTest
 
 @MainActor
 final class RocketDetailsViewModelTests: XCTestCase {
-    func testProvidedRocketMapsOnAppearanceWithoutInteractor() {
-        // Given
-        let rocket = makeRocket()
-        let viewModel = RocketDetailsViewModel(rocket: rocket)
-
-        // When
-        viewModel.handle(event: .appeared)
-
-        // Then
-        guard case .loaded(let data) = viewModel.state else {
-            return XCTFail("Expected supplied rocket to load synchronously")
-        }
-        XCTAssertEqual(data.name, rocket.name)
-        XCTAssertEqual(data.imageURL, rocket.imageURL)
-        XCTAssertEqual(data.description, rocket.description)
-        XCTAssertEqual(data.engineType, rocket.engineType)
-    }
-
     func testStartsLoading() {
         // Given
         let interactor = RocketDetailsInteractorMock()

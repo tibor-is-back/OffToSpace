@@ -10,6 +10,39 @@ final class DefaultLaunchesInteractorTests: XCTestCase {
     )
     private let pageSize = 10
 
+    func testDetailsReadsCachedLaunchAfterFilterReset() async throws {
+        // Given
+        let launch = makeLaunch()
+        let repository = LaunchesRepositoryMock(pages: makePage(items: [launch]))
+        let interactor = DefaultLaunchesInteractor(repository: repository, filter: filter)
+
+        // When
+        _ = try await interactor.loadNextPage()
+        interactor.updateFilter(LaunchFilter(startDate: .distantFuture, endDate: nil))
+        let cached = try interactor.loadLaunch(id: launch.id)
+
+        // Then
+        XCTAssertEqual(cached, launch)
+        XCTAssertEqual(repository.fetchCalls.count, 1)
+        XCTAssertTrue(interactor.hasNextPage)
+    }
+
+    func testMissingCachedLaunchThrowsNotFound() {
+        // Given
+        let interactor = makeInteractor(repository: LaunchesRepositoryMock())
+
+        // When
+        do {
+            _ = try interactor.loadLaunch(id: "missing")
+            XCTFail("Expected a cache miss")
+        } catch {
+            // Then
+            guard case LaunchDetailsError.notFound = error else {
+                return XCTFail("Expected notFound, got \(error)")
+            }
+        }
+    }
+
     func testHasNextPageBeforeAnyLoad() {
         // Given
         let repository = LaunchesRepositoryMock()

@@ -1,6 +1,7 @@
 import Foundation
 
 final class DefaultLaunchesInteractor {
+    private var cache: [String: Launch] = [:]
     private let repository: any LaunchesRepository
     private var pagination: PageHandler
     private var filter: LaunchFilter
@@ -15,6 +16,13 @@ final class DefaultLaunchesInteractor {
 }
 
 extension DefaultLaunchesInteractor: LaunchesInteractor {
+    func loadLaunch(id: String) throws -> Launch {
+        guard let launch = cache[id] else {
+            throw LaunchDetailsError.notFound
+        }
+        return launch
+    }
+
     var hasNextPage: Bool {
         pagination.nextPage != nil
     }
@@ -36,6 +44,9 @@ extension DefaultLaunchesInteractor: LaunchesInteractor {
 
         try Task.checkCancellation()
 
+        for item in result.items {
+            cache[item.id] = item
+        }
         pagination.advance(page: result.page, hasNextPage: result.hasNextPage)
 
         return result.items

@@ -3,11 +3,11 @@ import Observation
 
 struct LaunchDetailsViewState {
     var content: Content = .loading
-    var selectedRocketID: String?
 
     enum Content {
         case loading
         case loaded(LaunchDetailsViewData)
+        case error
     }
 }
 
@@ -15,24 +15,31 @@ struct LaunchDetailsViewState {
 final class LaunchDetailsViewModel {
     private(set) var state = LaunchDetailsViewState()
 
-    private let launch: Launch
+    private let launchID: String
+    private let interactor: any LaunchesInteractor
 
-    init(launch: Launch) {
-        self.launch = launch
+    init(launchID: String, interactor: any LaunchesInteractor, state: LaunchDetailsViewState = .init()) {
+        self.launchID = launchID
+        self.interactor = interactor
+        self.state = state
     }
 
     func handle(event: LaunchDetailsViewEvent) {
         switch event {
         case .appeared:
-            state.content = .loaded(map())
-        case .rocketSelected(let id):
-            state.selectedRocketID = id
-        case .rocketDetailsDismissed:
-            state.selectedRocketID = nil
+            guard case .loading = state.content else { return }
+        case .retryTapped:
+            break
+        }
+        do {
+            let launch = try interactor.loadLaunch(id: launchID)
+            state.content = .loaded(map(launch))
+        } catch {
+            state.content = .error
         }
     }
 
-    private func map() -> LaunchDetailsViewData {
+    private func map(_ launch: Launch) -> LaunchDetailsViewData {
         let status: (text: String, style: BadgeView.Style) = switch launch.status {
         case .upcoming:
             (String(localized: "launches.badge.upcoming"), .info)

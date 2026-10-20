@@ -16,22 +16,14 @@ enum RocketDetailsViewEvent {
 final class RocketDetailsViewModel {
     private(set) var state: RocketDetailsViewState
 
-    private enum Source {
-        case rocket(Rocket)
-        case remote(id: String, interactor: any RocketsInteractor)
-    }
-
-    private let source: Source
+    private let rocketID: String
+    private let interactor: any RocketsInteractor
     private var loadingTask: Task<Void, Never>?
 
     init(rocketID: String, interactor: any RocketsInteractor, state: RocketDetailsViewState = .loading) {
-        source = .remote(id: rocketID, interactor: interactor)
+        self.rocketID = rocketID
+        self.interactor = interactor
         self.state = state
-    }
-
-    init(rocket: Rocket) {
-        source = .rocket(rocket)
-        state = .loading
     }
 
     func handle(event: RocketDetailsViewEvent) {
@@ -45,15 +37,6 @@ final class RocketDetailsViewModel {
     }
 
     private func load() {
-        switch source {
-        case .rocket(let rocket):
-            state = .loaded(map(rocket))
-        case .remote(let id, let interactor):
-            load(rocketID: id, interactor: interactor)
-        }
-    }
-
-    private func load(rocketID: String, interactor: any RocketsInteractor) {
         guard loadingTask == nil else { return }
         state = .loading
 

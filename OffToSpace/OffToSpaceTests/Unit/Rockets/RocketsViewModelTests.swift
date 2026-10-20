@@ -32,17 +32,6 @@ final class RocketsViewModelTests: XCTestCase {
         XCTAssertEqual(items.first?.imageURL, rocket.imageURL)
         XCTAssertEqual(items.first?.successRate, 0.98.formatted(.percent.precision(.fractionLength(0))))
 
-        // When
-        viewModel.handle(event: .rocketSelected(rocket.id))
-
-        // Then
-        XCTAssertEqual(viewModel.state.selectedRocket, rocket)
-
-        // When
-        viewModel.handle(event: .detailsDismissed)
-
-        // Then
-        XCTAssertNil(viewModel.state.selectedRocket)
     }
 
     func testPaginationAppendsItemsAndStopsAtLastPage() async {

@@ -6,6 +6,22 @@ import XCTest
 final class DefaultRocketsInteractorTests: XCTestCase {
     private let pageSize = 10
 
+    func testDetailsReadsCachedRocket() async throws {
+        // Given
+        let rocket = makeRocket()
+        let repository = RocketsRepositoryMock(pages: makePage(items: [rocket]))
+        let interactor = DefaultRocketsInteractor(repository: repository)
+
+        // When
+        _ = try await interactor.loadNextPage()
+        let cached = try await interactor.loadRocket(id: rocket.id)
+
+        // Then
+        XCTAssertEqual(cached, rocket)
+        XCTAssertEqual(repository.fetchCalls.count, 1)
+        XCTAssertTrue(interactor.hasNextPage)
+    }
+
     func testHasNextPageBeforeAnyLoad() {
         // Given
         let repository = RocketsRepositoryMock()

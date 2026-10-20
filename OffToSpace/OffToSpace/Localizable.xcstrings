@@ -254,6 +254,36 @@
         }
       }
     },
+    "launches.details.errorTitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to load launch"
+          }
+        }
+      }
+    },
+    "launches.details.errorDescription" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The launch is no longer available in this session. Return to the launch list and try again."
+          }
+        }
+      }
+    },
+    "launches.details.retry" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
     "launches.details.watchLaunch" : {
       "extractionState" : "manual",
       "localizations" : {

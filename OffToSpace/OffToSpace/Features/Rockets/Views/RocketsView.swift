@@ -2,13 +2,11 @@ import SwiftUI
 
 struct RocketsView: View {
     @State private var viewModel: RocketsViewModel
+    private let onRocketSelected: (String) -> Void
 
-    init(dependencies: AppDependencies.Rockets) {
-        self.init(viewModel: dependencies.makeViewModel())
-    }
-
-    init(viewModel: RocketsViewModel) {
+    init(viewModel: RocketsViewModel, onRocketSelected: @escaping (String) -> Void) {
         _viewModel = State(initialValue: viewModel)
+        self.onRocketSelected = onRocketSelected
     }
 
     var body: some View {
@@ -20,16 +18,6 @@ struct RocketsView: View {
         }
         .background(DesignSystem.Colors.background)
         .toolbar(.hidden, for: .navigationBar)
-        .navigationDestination(item: Binding(
-            get: { viewModel.state.selectedRocket },
-            set: { rocket in
-                if rocket == nil {
-                    viewModel.handle(event: .detailsDismissed)
-                }
-            }
-        )) { rocket in
-            RocketDetailsView(viewModel: RocketDetailsViewModel(rocket: rocket))
-        }
         .task {
             viewModel.handle(event: .appeared)
         }
@@ -46,7 +34,7 @@ struct RocketsView: View {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(items, id: \.id) { item in
                         Button {
-                            viewModel.handle(event: .rocketSelected(item.id))
+                            onRocketSelected(item.id)
                         } label: {
                             RocketListItemView(data: item)
                         }
@@ -135,31 +123,35 @@ struct RocketsView: View {
 
 #Preview("Light") {
     NavigationStack {
-        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .loaded(RocketsPreviewData.listItems, pagination: .finished)))
+        RocketsView(
+            viewModel: RocketsPreviewData.makeViewModel(state: .loaded(RocketsPreviewData.listItems, pagination: .finished))
+        ) { _ in }
     }
 }
 
 #Preview("Dark") {
     NavigationStack {
-        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .loaded(RocketsPreviewData.listItems, pagination: .finished)))
+        RocketsView(
+            viewModel: RocketsPreviewData.makeViewModel(state: .loaded(RocketsPreviewData.listItems, pagination: .finished))
+        ) { _ in }
     }
     .preferredColorScheme(.dark)
 }
 
 #Preview("Loading") {
     NavigationStack {
-        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .loading))
+        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .loading)) { _ in }
     }
 }
 
 #Preview("Empty") {
     NavigationStack {
-        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .empty))
+        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .empty)) { _ in }
     }
 }
 
 #Preview("Error") {
     NavigationStack {
-        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .error))
+        RocketsView(viewModel: RocketsPreviewData.makeViewModel(state: .error)) { _ in }
     }
 }

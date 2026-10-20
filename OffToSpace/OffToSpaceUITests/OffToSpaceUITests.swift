@@ -1,5 +1,6 @@
 import XCTest
 
+@MainActor
 final class OffToSpaceUITests: XCTestCase {
     private let timeout: TimeInterval = 5
 
@@ -7,7 +8,6 @@ final class OffToSpaceUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    @MainActor
     func testLaunchesNavigatesThroughDetailsToRocketDetails() {
         // Given
         let app = launchApp()
@@ -35,7 +35,6 @@ final class OffToSpaceUITests: XCTestCase {
         assertRocketDetails(in: app)
     }
 
-    @MainActor
     func testRocketsNavigatesToRocketDetails() {
         // Given
         let app = launchApp()
@@ -59,7 +58,6 @@ final class OffToSpaceUITests: XCTestCase {
         assertRocketDetails(in: app)
     }
 
-    @MainActor
     private func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["uiTesting", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
@@ -67,7 +65,6 @@ final class OffToSpaceUITests: XCTestCase {
         return app
     }
 
-    @MainActor
     private func scrollTo(
         _ element: XCUIElement,
         in scrollView: XCUIElement,
@@ -85,7 +82,6 @@ final class OffToSpaceUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [hittable], timeout: timeout), .completed, file: file, line: line)
     }
 
-    @MainActor
     private func assertRocketDetails(in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
         let screen = app.scrollViews["rocketDetails.screen"]
         XCTAssertTrue(screen.waitForExistence(timeout: timeout), file: file, line: line)

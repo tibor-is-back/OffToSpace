@@ -40,6 +40,13 @@ enum LaunchesPreviewData {
         )
     }
 
+    static func makeDetailsViewModel(
+        launch: Launch = detailsLaunch,
+        state: LaunchDetailsViewState = .init()
+    ) -> LaunchDetailsViewModel {
+        LaunchDetailsViewModel(launchID: launch.id, interactor: PreviewLaunchDetailsInteractor(launch: launch), state: state)
+    }
+
     static let rangeStart = Date(timeIntervalSince1970: 1_704_110_400)
     static let rangeEnd = Date(timeIntervalSince1970: 1_735_646_400)
 
@@ -93,7 +100,23 @@ private final class PreviewLaunchesInteractor: LaunchesInteractor {
 
     func updateFilter(_ filter: LaunchFilter) {}
 
+    func loadLaunch(id: String) throws -> Launch {
+        throw LaunchDetailsError.notFound
+    }
+
     func loadNextPage() async throws -> [Launch] {
         throw CancellationError()
+    }
+}
+
+private struct PreviewLaunchDetailsInteractor: LaunchesInteractor {
+    let launch: Launch
+
+    var hasNextPage: Bool { false }
+    func updateFilter(_ filter: LaunchFilter) {}
+    func loadNextPage() async throws -> [Launch] { [] }
+
+    func loadLaunch(id: String) throws -> Launch {
+        launch
     }
 }

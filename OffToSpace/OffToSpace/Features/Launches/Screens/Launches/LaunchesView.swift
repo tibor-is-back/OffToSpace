@@ -2,18 +2,11 @@ import SwiftUI
 
 struct LaunchesView: View {
     @State private var viewModel: LaunchesViewModel
-    private let makeRocketDetailsViewModel: (String) -> RocketDetailsViewModel
+    private let onLaunchSelected: (String) -> Void
 
-    init(dependencies: AppDependencies.Launches, rockets: AppDependencies.Rockets) {
-        self.init(
-            viewModel: dependencies.makeViewModel(),
-            makeRocketDetailsViewModel: rockets.makeDetailsViewModel(rocketID:)
-        )
-    }
-
-    init(viewModel: LaunchesViewModel, makeRocketDetailsViewModel: @escaping (String) -> RocketDetailsViewModel) {
+    init(viewModel: LaunchesViewModel, onLaunchSelected: @escaping (String) -> Void) {
         _viewModel = State(initialValue: viewModel)
-        self.makeRocketDetailsViewModel = makeRocketDetailsViewModel
+        self.onLaunchSelected = onLaunchSelected
     }
 
     var body: some View {
@@ -25,19 +18,6 @@ struct LaunchesView: View {
         }
         .background(DesignSystem.Colors.background)
         .toolbar(.hidden, for: .navigationBar)
-        .navigationDestination(item: Binding(
-            get: { viewModel.state.selectedLaunch },
-            set: { launch in
-                if launch == nil {
-                    viewModel.handle(event: .detailsDismissed)
-                }
-            }
-        )) { launch in
-            LaunchDetailsView(
-                viewModel: LaunchDetailsViewModel(launch: launch),
-                makeRocketDetailsViewModel: makeRocketDetailsViewModel
-            )
-        }
         .task {
             viewModel.handle(event: .appeared)
         }
@@ -117,7 +97,7 @@ struct LaunchesView: View {
                 LazyVStack(spacing: DesignSystem.Spacing.small) {
                     ForEach(launches, id: \.id) { launch in
                         Button {
-                            viewModel.handle(event: .launchSelected(launch.id))
+                            onLaunchSelected(launch.id)
                         } label: {
                             LaunchListItemView(data: launch)
                         }
@@ -157,45 +137,40 @@ struct LaunchesView: View {
 #Preview("Loading") {
     NavigationStack {
         LaunchesView(
-            viewModel: LaunchesPreviewData.makeViewModel(content: .loading),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeViewModel(content: .loading)
+        ) { _ in }
     }
 }
 
 #Preview("Loaded") {
     NavigationStack {
         LaunchesView(
-            viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems))
+        ) { _ in }
     }
 }
 
 #Preview("Empty") {
     NavigationStack {
         LaunchesView(
-            viewModel: LaunchesPreviewData.makeViewModel(content: .empty),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeViewModel(content: .empty)
+        ) { _ in }
     }
 }
 
 #Preview("Error") {
     NavigationStack {
         LaunchesView(
-            viewModel: LaunchesPreviewData.makeViewModel(content: .error),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeViewModel(content: .error)
+        ) { _ in }
     }
 }
 
 #Preview("Dark Loaded") {
     NavigationStack {
         LaunchesView(
-            viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems)),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeViewModel(content: .loaded(LaunchesPreviewData.listItems))
+        ) { _ in }
     }
     .preferredColorScheme(.dark)
 }

@@ -2,18 +2,17 @@ import SwiftUI
 
 enum LaunchDetailsViewEvent {
     case appeared
-    case rocketSelected(String)
-    case rocketDetailsDismissed
+    case retryTapped
 }
 
 struct LaunchDetailsView: View {
     @State private var viewModel: LaunchDetailsViewModel
+    private let onRocketSelected: (String) -> Void
     @State private var isWebcastPresented = false
-    private let makeRocketDetailsViewModel: (String) -> RocketDetailsViewModel
 
-    init(viewModel: LaunchDetailsViewModel, makeRocketDetailsViewModel: @escaping (String) -> RocketDetailsViewModel) {
+    init(viewModel: LaunchDetailsViewModel, onRocketSelected: @escaping (String) -> Void) {
         _viewModel = State(initialValue: viewModel)
-        self.makeRocketDetailsViewModel = makeRocketDetailsViewModel
+        self.onRocketSelected = onRocketSelected
     }
 
     var body: some View {
@@ -24,16 +23,6 @@ struct LaunchDetailsView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .accessibilityIdentifier("launchDetails.screen")
-            .navigationDestination(item: Binding(
-                get: { viewModel.state.selectedRocketID },
-                set: { id in
-                    if id == nil {
-                        viewModel.handle(event: .rocketDetailsDismissed)
-                    }
-                }
-            )) { id in
-                RocketDetailsView(viewModel: makeRocketDetailsViewModel(id))
-            }
             .onAppear {
                 viewModel.handle(event: .appeared)
             }
@@ -47,6 +36,19 @@ struct LaunchDetailsView: View {
                 .accessibilityIdentifier("launchDetails.loading")
         case .loaded(let data):
             details(data)
+        case .error:
+            ContentUnavailableView {
+                Label("launches.details.errorTitle", systemImage: "exclamationmark.triangle")
+            } description: {
+                Text("launches.details.errorDescription")
+            } actions: {
+                Button("launches.details.retry") {
+                    viewModel.handle(event: .retryTapped)
+                }
+                .buttonStyle(.primary)
+                .accessibilityIdentifier("launchDetails.retry")
+            }
+            .accessibilityIdentifier("launchDetails.error")
         }
     }
 
@@ -131,7 +133,7 @@ struct LaunchDetailsView: View {
 
     private func rocket(_ data: LaunchDetailsViewData.Rocket) -> some View {
         Button {
-            viewModel.handle(event: .rocketSelected(data.id))
+            onRocketSelected(data.id)
         } label: {
             HStack(spacing: DesignSystem.Spacing.medium) {
                 RemoteImage(url: data.imageURL)
@@ -163,18 +165,16 @@ struct LaunchDetailsView: View {
 #Preview("Full details") {
     NavigationStack {
         LaunchDetailsView(
-            viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch)
+        ) { _ in }
     }
 }
 
 #Preview("Dark details") {
     NavigationStack {
         LaunchDetailsView(
-            viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeDetailsViewModel(launch: LaunchesPreviewData.detailsLaunch)
+        ) { _ in }
     }
     .preferredColorScheme(.dark)
 }
@@ -182,8 +182,11 @@ struct LaunchDetailsView: View {
 #Preview("Minimal details") {
     NavigationStack {
         LaunchDetailsView(
-            viewModel: LaunchDetailsViewModel(launch: LaunchesPreviewData.minimalDetailsLaunch),
-            makeRocketDetailsViewModel: RocketsPreviewData.makeDetailsViewModel(rocketID:)
-        )
+            viewModel: LaunchesPreviewData.makeDetailsViewModel(launch: LaunchesPreviewData.minimalDetailsLaunch)
+        ) { _ in }
     }
+}
+
+#Preview("Error") {
+    LaunchDetailsView(viewModel: LaunchesPreviewData.makeDetailsViewModel(state: .init(content: .error))) { _ in }
 }

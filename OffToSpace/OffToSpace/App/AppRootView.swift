@@ -6,19 +6,12 @@ struct AppRootView: View {
     var body: some View {
         TabView {
             Tab("app.root.launchesTab", image: TabIcon.launches) {
-                NavigationStack {
-                    LaunchesView(
-                        dependencies: dependencies.launches,
-                        rockets: dependencies.rockets
-                    )
-                }
+                LaunchesRootView(launches: dependencies.launches, rockets: dependencies.rockets)
             }
             .accessibilityIdentifier("root.launchesTab")
 
             Tab("app.root.rocketsTab", image: TabIcon.rockets) {
-                NavigationStack {
-                    RocketsView(dependencies: dependencies.rockets)
-                }
+                RocketsRootView(rockets: dependencies.rockets)
             }
             .accessibilityIdentifier("root.rocketsTab")
         }

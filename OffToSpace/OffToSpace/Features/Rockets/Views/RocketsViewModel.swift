@@ -3,7 +3,6 @@ import Observation
 
 struct RocketsViewState {
     var content: Content = .loading
-    var selectedRocket: Rocket?
 
     enum Content {
         case loading
@@ -22,8 +21,6 @@ struct RocketsViewState {
 
 enum RocketsViewEvent {
     case appeared
-    case rocketSelected(String)
-    case detailsDismissed
     case nextPageRequested
     case retryTapped
 }
@@ -34,7 +31,6 @@ final class RocketsViewModel {
 
     private let interactor: any RocketsInteractor
     private var items: [RocketsListItemViewData] = []
-    private var rocketsByID: [String: Rocket] = [:]
     private var loadingTask: Task<Void, Never>?
 
     init(interactor: any RocketsInteractor, state: RocketsViewState.Content = .loading) {
@@ -52,10 +48,7 @@ final class RocketsViewModel {
             loadNextPage()
         case .nextPageRequested, .retryTapped:
             loadNextPage()
-        case .rocketSelected(let id):
-            state.selectedRocket = rocketsByID[id]
-        case .detailsDismissed:
-            state.selectedRocket = nil
+
         }
     }
 
@@ -85,7 +78,6 @@ final class RocketsViewModel {
 
     private func map(_ rockets: [Rocket]) {
         for rocket in rockets {
-            rocketsByID[rocket.id] = rocket
             items.append(RocketsListItemViewData(
                 id: rocket.id,
                 name: rocket.name,

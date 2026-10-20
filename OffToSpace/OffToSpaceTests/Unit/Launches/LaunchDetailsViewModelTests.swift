@@ -8,7 +8,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         let launch = makeLaunch()
 
         // When
-        let viewModel = LaunchDetailsViewModel(launch: launch)
+        let viewModel = makeViewModel(launch: launch)
 
         // Then
         guard case .loading = viewModel.state.content else {
@@ -19,7 +19,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
     func testAppearanceMapsLaunchDetails() {
         // Given
         let launch = makeLaunch()
-        let viewModel = LaunchDetailsViewModel(launch: launch)
+        let viewModel = makeViewModel(launch: launch)
 
         // When
         viewModel.handle(event: .appeared)
@@ -43,7 +43,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
 
     func testMissingOptionalDetailsRemainAbsent() {
         // Given
-        let viewModel = LaunchDetailsViewModel(launch: makeLaunch(hasOptionalDetails: false))
+        let viewModel = makeViewModel(launch: makeLaunch(hasOptionalDetails: false))
 
         // When
         viewModel.handle(event: .appeared)
@@ -68,7 +68,7 @@ final class LaunchDetailsViewModelTests: XCTestCase {
         ]
 
         for (status, expected) in cases {
-            let viewModel = LaunchDetailsViewModel(launch: makeLaunch(status: status))
+            let viewModel = makeViewModel(launch: makeLaunch(status: status))
 
             // When
             viewModel.handle(event: .appeared)
@@ -80,6 +80,34 @@ final class LaunchDetailsViewModelTests: XCTestCase {
             XCTAssertEqual(data.statusText, expected.text)
             XCTAssertEqual(data.statusStyle, expected.style)
         }
+    }
+
+    func testCacheMissShowsErrorAndRetryRecovers() {
+        // Given
+        let interactor = LaunchDetailsInteractorStub(launch: nil)
+        let viewModel = LaunchDetailsViewModel(launchID: "crew-8", interactor: interactor)
+
+        // When
+        viewModel.handle(event: .appeared)
+
+        // Then
+        guard case .error = viewModel.state.content else {
+            return XCTFail("Expected an error for a missing launch")
+        }
+
+        // When
+        interactor.launch = makeLaunch()
+        viewModel.handle(event: .retryTapped)
+
+        // Then
+        guard case .loaded(let data) = viewModel.state.content else {
+            return XCTFail("Expected retry to load the launch")
+        }
+        XCTAssertEqual(data.name, "Crew-8")
+    }
+
+    private func makeViewModel(launch: Launch) -> LaunchDetailsViewModel {
+        LaunchDetailsViewModel(launchID: launch.id, interactor: LaunchDetailsInteractorStub(launch: launch))
     }
 
     private func makeLaunch(status: Launch.Status = .successful, hasOptionalDetails: Bool = true) -> Launch {
@@ -96,5 +124,23 @@ final class LaunchDetailsViewModelTests: XCTestCase {
             rocket: .init(id: "falcon-9", name: "Falcon 9", type: "rocket",
                           imageURL: hasOptionalDetails ? URL(string: "https://example.com/rocket.png") : nil)
         )
+    }
+}
+
+@MainActor
+private final class LaunchDetailsInteractorStub: LaunchesInteractor {
+    var launch: Launch?
+
+    init(launch: Launch?) {
+        self.launch = launch
+    }
+
+    var hasNextPage: Bool { false }
+    func updateFilter(_ filter: LaunchFilter) {}
+    func loadNextPage() async throws -> [Launch] { [] }
+
+    func loadLaunch(id: String) throws -> Launch {
+        guard let launch, launch.id == id else { throw LaunchDetailsError.notFound }
+        return launch
     }
 }

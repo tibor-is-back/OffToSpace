@@ -17,34 +17,37 @@ struct AppDependencies {
 
     struct Launches {
         private let repository: any LaunchesRepository
-        private let isUITesting: Bool
+        private let interactor: any LaunchesInteractor
+        private let filter: LaunchFilter
 
         init(apiClient: any APIClient, baseURL: URL, isUITesting: Bool) {
-            self.isUITesting = isUITesting
             if isUITesting {
                 repository = UITestingLaunchesRepository()
             } else {
                 repository = DefaultLaunchesRepository(apiClient: apiClient, baseURL: baseURL)
             }
-        }
-
-        func makeViewModel() -> LaunchesViewModel {
             let calendar = Calendar.current
             let referenceDate = isUITesting ? UITestingData.launchDate : .now
             guard let year = calendar.dateInterval(of: .year, for: referenceDate),
                   let yearEnd = calendar.date(byAdding: .second, value: -1, to: year.end) else {
                 preconditionFailure("The current calendar must provide the current year's date range.")
             }
-            let filter = LaunchFilter(startDate: year.start, endDate: yearEnd)
-            return LaunchesViewModel(
-                interactor: DefaultLaunchesInteractor(repository: repository, filter: filter),
-                filter: filter
-            )
+            filter = LaunchFilter(startDate: year.start, endDate: yearEnd)
+            interactor = DefaultLaunchesInteractor(repository: repository, filter: filter)
+        }
+
+        func makeViewModel() -> LaunchesViewModel {
+            LaunchesViewModel(interactor: interactor, filter: filter)
+        }
+
+        func makeDetailsViewModel(launchID: String) -> LaunchDetailsViewModel {
+            LaunchDetailsViewModel(launchID: launchID, interactor: interactor)
         }
     }
 
     struct Rockets {
         private let repository: any RocketsRepository
+        private let interactor: any RocketsInteractor
 
         init(apiClient: any APIClient, baseURL: URL, isUITesting: Bool) {
             if isUITesting {
@@ -52,15 +55,15 @@ struct AppDependencies {
             } else {
                 repository = DefaultRocketsRepository(apiClient: apiClient, baseURL: baseURL)
             }
+            interactor = DefaultRocketsInteractor(repository: repository)
         }
 
         func makeViewModel() -> RocketsViewModel {
-            RocketsViewModel(interactor: DefaultRocketsInteractor(repository: repository))
+            RocketsViewModel(interactor: interactor)
         }
 
         func makeDetailsViewModel(rocketID: String) -> RocketDetailsViewModel {
-            RocketDetailsViewModel(rocketID: rocketID, interactor: DefaultRocketsInteractor(repository: repository))
+            RocketDetailsViewModel(rocketID: rocketID, interactor: interactor)
         }
     }
-
 }
